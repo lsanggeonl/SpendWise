@@ -5,7 +5,7 @@ const pool = mysql.createPool({
   host: "localhost",
   user: "subjectid024",
   password: "subjectid024",
-  database: "todo_app",
+  database: "subjectdb024",
   connectionLimit: 5,
 });
 
