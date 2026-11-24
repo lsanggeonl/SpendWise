@@ -1,0 +1,72 @@
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="/dashboard" class="brand-logo">
+      <div class="logo-badge">💎</div>
+      <div>
+        <div class="brand-title">Spend<span>Wise</span></div>
+        <div style="font-size: 0.65rem; color: #6EE7B7; display: flex; align-items: center; gap: 5px; font-weight: 600; letter-spacing: 0.04em;">
+          <span style="width: 5px; height: 5px; border-radius: 50%; background: #10B981; box-shadow: 0 0 6px #10B981;"></span>
+          3D ROBOT EDITION
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-title">메인 메뉴</div>
+    
+    <a href="/dashboard" class="nav-item <%= currentPath === '/dashboard' ? 'active' : '' %>">
+      <span class="nav-icon">📊</span>
+      <span>대시보드</span>
+    </a>
+
+    <a href="/transactions" class="nav-item <%= currentPath.startsWith('/transactions') ? 'active' : '' %>">
+      <span class="nav-icon">💳</span>
+      <span>수입·지출 관리</span>
+    </a>
+
+    <a href="/analysis?tab=patterns" class="nav-item <%= currentPath === '/analysis' && query.tab === 'patterns' ? 'active' : '' %>">
+      <span class="nav-icon">🔍</span>
+      <span>소비 패턴 분석</span>
+    </a>
+
+    <a href="/budget" class="nav-item <%= currentPath.startsWith('/budget') ? 'active' : '' %>">
+      <span class="nav-icon">🎯</span>
+      <span>예산 관리</span>
+    </a>
+
+    <a href="/analysis" class="nav-item <%= currentPath === '/analysis' && (!query.tab || query.tab === 'diagnosis') ? 'active' : '' %>">
+      <span class="nav-icon">🧬</span>
+      <span>소비 습관 진단</span>
+    </a>
+
+    <a href="/challenges" class="nav-item <%= currentPath.startsWith('/challenges') ? 'active' : '' %>">
+      <span class="nav-icon">🏆</span>
+      <span>절약 챌린지</span>
+    </a>
+
+    <div class="nav-section-title" style="margin-top: 14px;">설정 및 계정</div>
+
+    <a href="/settings" class="nav-item <%= currentPath.startsWith('/settings') ? 'active' : '' %>">
+      <span class="nav-icon">⚙️</span>
+      <span>회원 설정</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <% if (currentUser) { %>
+      <div class="user-profile-mini">
+        <div class="user-info">
+          <div class="avatar-circle"><%= currentUser.name.charAt(0) %></div>
+          <div>
+            <div class="user-name-text"><%= currentUser.name %></div>
+            <div class="user-email-text"><%= currentUser.email %></div>
+          </div>
+        </div>
+        <a href="/auth/logout" class="btn-logout" title="로그아웃">
+          🚪
+        </a>
+      </div>
+    <% } %>
+  </div>
+</aside>

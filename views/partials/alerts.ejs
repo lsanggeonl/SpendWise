@@ -1,0 +1,43 @@
+<% if (typeof budgetComparison !== 'undefined' && budgetComparison.totalBudget > 0) { %>
+  <% const tier = budgetComparison.warningTier; %>
+  <% if (tier && tier.level !== 'safe' && tier.level !== 'none') { %>
+    <div class="alert-banner alert-banner-<%= tier.class %>">
+      <div class="alert-icon">
+        <% if (tier.level === 'danger_100') { %>🚨<% } else if (tier.level === 'warning_90') { %>⚠️<% } else { %>🔔<% } %>
+      </div>
+      <div class="alert-body">
+        <div class="alert-title"><%= tier.label %></div>
+        <div class="alert-desc"><%= tier.message %> (현재 사용률: <strong><%= budgetComparison.usageRate %>%</strong> / 지출액: <%= formatMoney(budgetComparison.totalExpense) %> / 예산: <%= formatMoney(budgetComparison.totalBudget) %>)</div>
+      </div>
+    </div>
+  <% } %>
+<% } %>
+
+<% if (typeof message !== 'undefined' && message) { %>
+  <div class="alert-banner alert-banner-success">
+    <div class="alert-icon">✅</div>
+    <div class="alert-body">
+      <div class="alert-title">처리가 완료되었습니다.</div>
+      <div class="alert-desc">
+        <% if (message === 'created') { %>성공적으로 등록되었습니다.<% } %>
+        <% if (message === 'updated') { %>정상적으로 수정되었습니다.<% } %>
+        <% if (message === 'deleted') { %>안전하게 삭제되었습니다.<% } %>
+        <% if (message === 'total_saved') { %>총 예산이 성공적으로 저장되었습니다.<% } %>
+        <% if (message === 'cat_saved') { %>카테고리별 예산이 성공적으로 반영되었습니다.<% } %>
+        <% if (message === 'progress_added') { %>저축 금액이 추가되어 목표 달성률이 갱신되었습니다.<% } %>
+        <% if (message === 'profile_updated') { %>회원 프로필 및 기준 설정이 갱신되었습니다.<% } %>
+        <% if (message === 'password_updated') { %>비밀번호가 안전하게 변경되었습니다.<% } %>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="alert-banner alert-banner-danger">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-body">
+      <div class="alert-title">오류 안내</div>
+      <div class="alert-desc"><%= error %></div>
+    </div>
+  </div>
+<% } %>

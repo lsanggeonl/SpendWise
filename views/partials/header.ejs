@@ -1,14 +1,29 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>나의 Todo</title>
-  <link rel="stylesheet" href="/style.css">
-</head>
-<body>
-  <header class="site-header">
-    <strong>TODO</strong>
-    <span class="sub">Express + EJS + MySQL</span>
-  </header>
-  <main>
+<header class="top-header">
+  <div class="header-left">
+    <button class="mobile-toggle-btn" id="mobileToggleBtn" aria-label="메뉴 열기">☰</button>
+    <h1 class="page-main-title"><%= pageTitle.split('|')[0].trim() %></h1>
+  </div>
+
+  <div class="header-right">
+    <% if (typeof yearMonth !== 'undefined') { %>
+      <form class="month-picker-form" method="GET" action="<%= currentPath %>">
+        <% if (query.tab) { %>
+          <input type="hidden" name="tab" value="<%= query.tab %>">
+        <% } %>
+        <label for="globalMonthPicker" style="font-size: 0.82rem; color: var(--text-muted); margin-right: 4px;">📅</label>
+        <input
+          type="month"
+          id="globalMonthPicker"
+          name="month"
+          value="<%= yearMonth %>"
+          class="month-picker-input"
+          title="조회 월 변경"
+        >
+      </form>
+    <% } %>
+
+    <a href="/transactions/new" class="btn btn-primary btn-sm">
+      <span>➕ 거래 등록</span>
+    </a>
+  </div>
+</header>

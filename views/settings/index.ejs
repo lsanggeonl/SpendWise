@@ -1,0 +1,158 @@
+<%- include('../partials/head') %>
+
+<div class="app-container">
+  <%- include('../partials/sidebar') %>
+
+  <div class="main-wrapper">
+    <%- include('../partials/header') %>
+
+    <main class="content-body" style="max-width: 760px; margin: 0 auto; width: 100%;">
+      <%- include('../partials/alerts') %>
+
+      <!-- User Profile & Threshold Preferences Card -->
+      <div class="card" style="margin-bottom: 28px; padding: 32px;">
+        <div class="card-header" style="margin-bottom: 24px;">
+          <div>
+            <div class="card-title">⚙️ 회원 정보 및 소비 습관 분석 기준 설정</div>
+            <div class="card-subtitle">과소비 및 반복 소액결제 탐지 기준 금액을 사용자 맞춤형으로 조정합니다.</div>
+          </div>
+        </div>
+
+        <form action="/settings/profile" method="POST">
+          <div class="form-group">
+            <label class="form-label">계정 이메일 (로그인 ID)</label>
+            <input type="email" class="form-control" value="<%= user.email %>" disabled style="opacity: 0.7; cursor: not-allowed;">
+            <small style="color: var(--text-dim); font-size: 0.75rem; margin-top: 4px; display: block;">이메일은 변경할 수 없습니다.</small>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="userName">성명 / 닉네임 *</label>
+            <input
+              type="text"
+              id="userName"
+              name="name"
+              class="form-control"
+              value="<%= user.name %>"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="incomeTarget">월 목표 소득 (원) *</label>
+            <input
+              type="number"
+              id="incomeTarget"
+              name="monthlyIncomeTarget"
+              class="form-control"
+              value="<%= user.monthly_income_target %>"
+              required
+              step="50000"
+              min="0"
+            >
+            <small style="color: var(--text-dim); font-size: 0.75rem; margin-top: 4px; display: block;">
+              예산 미설정 시 소득 대비 지출 비율 및 권장 저축률 산정의 분모가 됩니다.
+            </small>
+          </div>
+
+          <div class="form-row">
+            <!-- Overspending Threshold -->
+            <div class="form-group">
+              <label class="form-label" for="overThreshold">과소비 탐지 기준 금액 (원) *</label>
+              <input
+                type="number"
+                id="overThreshold"
+                name="overspendingThreshold"
+                class="form-control"
+                value="<%= user.overspending_threshold %>"
+                required
+                step="10000"
+                min="10000"
+              >
+              <small style="color: var(--text-dim); font-size: 0.75rem; margin-top: 4px; display: block;">
+                단일 지출이 이 금액을 넘으면 '과소비 의심'으로 탐지됩니다 (기본: 100,000원).
+              </small>
+            </div>
+
+            <!-- Micro-transaction Threshold -->
+            <div class="form-group">
+              <label class="form-label" for="microThreshold">반복 소액결제 기준 금액 (원) *</label>
+              <input
+                type="number"
+                id="microThreshold"
+                name="microTxThreshold"
+                class="form-control"
+                value="<%= user.micro_tx_threshold %>"
+                required
+                step="1000"
+                min="1000"
+              >
+              <small style="color: var(--text-dim); font-size: 0.75rem; margin-top: 4px; display: block;">
+                이 금액 이하의 잦은 결제를 '티끌 누수'로 묶어 분석합니다 (기본: 10,000원).
+              </small>
+            </div>
+          </div>
+
+          <div style="text-align: right; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-color);">
+            <button type="submit" class="btn btn-primary" style="padding: 10px 24px;">
+              설정 저장하기
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Password Change Card -->
+      <div class="card" style="padding: 32px;">
+        <div class="card-header" style="margin-bottom: 24px;">
+          <div>
+            <div class="card-title">🔒 비밀번호 변경</div>
+            <div class="card-subtitle">bcrypt 단방향 암호화로 계정 보안을 유지합니다.</div>
+          </div>
+        </div>
+
+        <form action="/settings/password" method="POST">
+          <div class="form-group">
+            <label class="form-label" for="currentPassword">현재 비밀번호 *</label>
+            <input
+              type="password"
+              id="currentPassword"
+              name="currentPassword"
+              class="form-control"
+              required
+            >
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="newPassword">새 비밀번호 (6자 이상) *</label>
+              <input
+                type="password"
+                id="newPassword"
+                name="newPassword"
+                class="form-control"
+                required
+              >
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="confirmPassword">새 비밀번호 확인 *</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                class="form-control"
+                required
+              >
+            </div>
+          </div>
+
+          <div style="text-align: right; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-color);">
+            <button type="submit" class="btn btn-secondary" style="padding: 10px 24px;">
+              비밀번호 변경
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

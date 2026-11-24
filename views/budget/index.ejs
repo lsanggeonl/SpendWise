@@ -1,0 +1,287 @@
+<%- include('../partials/head') %>
+
+<div class="app-container">
+  <%- include('../partials/sidebar') %>
+
+  <div class="main-wrapper">
+    <%- include('../partials/header') %>
+
+    <main class="content-body">
+      <%- include('../partials/alerts') %>
+
+      <!-- Top Overview: Total Monthly Budget -->
+      <div class="card" style="margin-bottom: 28px;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">🎯 <%= yearMonth %> 총 지출 예산 한도 관리</div>
+            <div class="card-subtitle">월 전체 지출 한도를 설정하고 70%·90%·100% 도달 시 실시간 경고를 수신합니다.</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('totalBudgetModal')">
+            ⚙️ 총 예산 금액 변경
+          </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 16px 0 24px;">
+          <div style="background: var(--bg-input); padding: 16px; border-radius: var(--radius-sm);">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">총 설정 예산</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #fff; margin-top: 4px;">
+              <%= formatMoney(budgetComparison.totalBudget) %>
+            </div>
+          </div>
+
+          <div style="background: var(--bg-input); padding: 16px; border-radius: var(--radius-sm);">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">현재 실제 지출액</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #F87171; margin-top: 4px;">
+              <%= formatMoney(budgetComparison.totalExpense) %>
+            </div>
+          </div>
+
+          <div style="background: var(--bg-input); padding: 16px; border-radius: var(--radius-sm);">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">남은 예산 잔액</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: <%= budgetComparison.remaining >= 0 ? 'var(--success)' : 'var(--danger)' %>; margin-top: 4px;">
+              <%= formatMoney(budgetComparison.remaining) %>
+            </div>
+          </div>
+
+          <div style="background: var(--bg-input); padding: 16px; border-radius: var(--radius-sm);">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">예산 소진율</div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: <%= budgetComparison.warningTier ? budgetComparison.warningTier.color : '#fff' %>; margin-top: 4px;">
+              <%= budgetComparison.usageRate %>%
+            </div>
+          </div>
+        </div>
+
+        <!-- Big Progress Bar with Threshold Markers -->
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 8px;">
+            <span>진행률: <strong><%= budgetComparison.usageRate %>%</strong></span>
+            <% const tier = budgetComparison.warningTier; %>
+            <span class="badge badge-<%= tier ? tier.badge : 'secondary' %>">
+              <%= tier ? tier.label : '미설정' %>
+            </span>
+          </div>
+
+          <div class="progress-bar-bg" style="height: 14px; position: relative;">
+            <div
+              class="progress-bar-fill"
+              style="width: <%= Math.min(100, budgetComparison.usageRate) %>%; background: <%= tier ? tier.color : 'var(--primary)' %>;"
+            ></div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-dim); margin-top: 6px;">
+            <span>0% (시작)</span>
+            <span style="color: var(--warning); font-weight: 600;">▲ 70% 주의 단계</span>
+            <span style="color: var(--warning-high); font-weight: 600;">▲ 90% 경고 단계</span>
+            <span style="color: var(--danger); font-weight: 600;">▲ 100% 위험/초과</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Budgets Section -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">📑 카테고리별 예산 및 지출 비교</div>
+            <div class="card-subtitle">주요 지출 항목별 한도를 지정하여 편중된 과소비를 예방하세요.</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="openModal('newCategoryBudgetModal')">
+            ➕ 카테고리 예산 추가
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>카테고리</th>
+                <th>예산 한도</th>
+                <th>실제 지출액</th>
+                <th>남은 잔액</th>
+                <th style="min-width: 180px;">사용률 및 진행바</th>
+                <th>경고 단계</th>
+                <th style="text-align: right;">관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (budgetComparison.categories && budgetComparison.categories.length > 0) { %>
+                <% budgetComparison.categories.forEach(item => { %>
+                  <tr>
+                    <td>
+                      <span style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+                        <span style="width: 10px; height: 10px; border-radius: 50%; background: <%= item.category_color %>;"></span>
+                        <%= item.category_name %>
+                      </span>
+                    </td>
+                    <td>
+                      <%= item.budget_amount > 0 ? formatMoney(item.budget_amount) : '<span style="color: var(--text-dim);">미설정</span>' %>
+                    </td>
+                    <td style="color: #F87171; font-weight: 600;">
+                      <%= formatMoney(item.spent_amount) %>
+                    </td>
+                    <td style="color: <%= item.remaining >= 0 ? 'var(--success)' : 'var(--danger)' %>; font-weight: 600;">
+                      <%= item.budget_amount > 0 ? formatMoney(item.remaining) : '-' %>
+                    </td>
+                    <td>
+                      <% if (item.budget_amount > 0) { %>
+                        <div style="font-size: 0.78rem; margin-bottom: 4px; display: flex; justify-content: space-between;">
+                          <span><%= item.usage_rate %>%</span>
+                        </div>
+                        <div class="progress-bar-bg" style="height: 6px;">
+                          <div
+                            class="progress-bar-fill"
+                            style="width: <%= Math.min(100, item.usage_rate) %>%; background: <%= item.tier.color %>;"
+                          ></div>
+                        </div>
+                      <% } else { %>
+                        <span style="color: var(--text-dim); font-size: 0.78rem;">예산 미등록 지출</span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <span class="badge badge-<%= item.tier.badge %>">
+                        <%= item.tier.label %>
+                      </span>
+                    </td>
+                    <td style="text-align: right; white-space: nowrap;">
+                      <button
+                        type="button"
+                        class="btn btn-secondary btn-sm"
+                        style="padding: 4px 8px; font-size: 0.75rem;"
+                        onclick="openCategoryBudgetModal('<%= item.category_id %>', '<%= item.category_name %>', '<%= item.budget_amount %>')"
+                      >
+                        조정
+                      </button>
+
+                      <% if (item.budget_id) { %>
+                        <form action="/budget/<%= item.budget_id %>/delete" method="POST" style="display: inline-block; margin-left: 4px;" onsubmit="return confirm('이 카테고리 예산 설정을 해제하시겠습니까?');">
+                          <input type="hidden" name="yearMonth" value="<%= yearMonth %>">
+                          <button type="submit" class="btn btn-danger btn-sm" style="padding: 4px 8px; font-size: 0.75rem;">
+                            삭제
+                          </button>
+                        </form>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="7" style="text-align: center; color: var(--text-dim); padding: 36px;">
+                    등록된 카테고리 예산이 없습니다. 카테고리별 한도를 설정해보세요!
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal 1: Set Total Monthly Budget -->
+<div class="modal-backdrop" id="totalBudgetModal">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3 class="modal-title">🎯 <%= yearMonth %> 총 예산 설정</h3>
+      <button class="modal-close" onclick="closeModal('totalBudgetModal')">&times;</button>
+    </div>
+    <form action="/budget/total" method="POST">
+      <div class="modal-body">
+        <input type="hidden" name="yearMonth" value="<%= yearMonth %>">
+        <div class="form-group">
+          <label class="form-label" for="totalAmountInput">한 달 총 지출 예산 (원)</label>
+          <input
+            type="number"
+            id="totalAmountInput"
+            name="amount"
+            class="form-control"
+            value="<%= (budgetComparison && budgetComparison.hasTotalBudget) ? budgetComparison.totalBudget : (budgetComparison && budgetComparison.totalBudget ? budgetComparison.totalBudget : 2500000) %>"
+            required
+            step="10000"
+            min="0"
+          >
+          <small style="color: var(--text-dim); font-size: 0.75rem; margin-top: 6px; display: block;">
+            70% 도달 시 주의, 90% 도달 시 경고, 100% 초과 시 즉각적인 위험 알림이 발동됩니다.
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('totalBudgetModal')">취소</button>
+        <button type="submit" class="btn btn-primary">총 예산 저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal 2: Edit Existing Category Budget -->
+<div class="modal-backdrop" id="categoryBudgetModal">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3 class="modal-title">📑 <span id="modalCategoryName">카테고리</span> 예산 조정</h3>
+      <button class="modal-close" onclick="closeModal('categoryBudgetModal')">&times;</button>
+    </div>
+    <form action="/budget/category" method="POST">
+      <div class="modal-body">
+        <input type="hidden" name="yearMonth" value="<%= yearMonth %>">
+        <input type="hidden" id="modalCategoryId" name="categoryId" value="">
+        <div class="form-group">
+          <label class="form-label" for="modalBudgetAmount">월 한도 예산 (원)</label>
+          <input
+            type="number"
+            id="modalBudgetAmount"
+            name="amount"
+            class="form-control"
+            required
+            step="5000"
+            min="0"
+          >
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('categoryBudgetModal')">취소</button>
+        <button type="submit" class="btn btn-primary">저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal 3: Add New Category Budget -->
+<div class="modal-backdrop" id="newCategoryBudgetModal">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3 class="modal-title">➕ 새로운 카테고리 예산 추가</h3>
+      <button class="modal-close" onclick="closeModal('newCategoryBudgetModal')">&times;</button>
+    </div>
+    <form action="/budget/category" method="POST">
+      <div class="modal-body">
+        <input type="hidden" name="yearMonth" value="<%= yearMonth %>">
+        <div class="form-group">
+          <label class="form-label" for="newCatSelect">지출 카테고리 선택</label>
+          <select id="newCatSelect" name="categoryId" class="form-control" required>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat.id %>"><%= cat.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="newCatAmount">월 한도 예산 (원)</label>
+          <input
+            type="number"
+            id="newCatAmount"
+            name="amount"
+            class="form-control"
+            placeholder="300000"
+            required
+            step="5000"
+            min="0"
+          >
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('newCategoryBudgetModal')">취소</button>
+        <button type="submit" class="btn btn-primary">예산 등록</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

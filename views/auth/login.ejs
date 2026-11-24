@@ -1,0 +1,72 @@
+<%- include('../partials/head') %>
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
+  <div class="card" style="width: 100%; max-width: 440px; padding: 36px 32px;">
+    <div style="text-align: center; margin-bottom: 28px;">
+      <div class="logo-badge" style="margin: 0 auto 12px; width: 48px; height: 48px; font-size: 1.5rem;">💎</div>
+      <h2 style="font-size: 1.5rem; font-weight: 700;">Spend<span style="color: var(--primary-light);">Wise</span></h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px;">개인 소비습관 분석 및 스마트 자산 관리</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert-banner alert-banner-danger" style="margin-bottom: 20px;">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-body">
+          <div class="alert-desc"><%= error %></div>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (typeof message !== 'undefined' && message === 'logged_out') { %>
+      <div class="alert-banner alert-banner-success" style="margin-bottom: 20px;">
+        <div class="alert-icon">ℹ️</div>
+        <div class="alert-body">
+          <div class="alert-desc">안전하게 로그아웃되었습니다.</div>
+        </div>
+      </div>
+    <% } %>
+
+    <form action="/auth/login" method="POST">
+      <div class="form-group">
+        <label class="form-label" for="email">이메일 주소</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          placeholder="demo@spendwise.com"
+          value="<%= typeof email !== 'undefined' ? email : 'demo@spendwise.com' %>"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">비밀번호</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control"
+          placeholder="••••••••"
+          value="password123"
+          required
+        >
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 8px;">
+        로그인
+      </button>
+    </form>
+
+    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); text-align: center; font-size: 0.85rem; color: var(--text-muted);">
+      아직 계정이 없으신가요?
+      <a href="/auth/signup" style="color: var(--primary-light); font-weight: 600; margin-left: 6px;">회원가입</a>
+    </div>
+
+    <div style="margin-top: 16px; background: rgba(99, 102, 241, 0.08); border: 1px dashed rgba(99, 102, 241, 0.3); border-radius: var(--radius-sm); padding: 12px; font-size: 0.78rem; color: #CBD5E1;">
+      <strong>🧪 데모 체험 계정 정보</strong><br>
+      이메일: <code>demo@spendwise.com</code><br>
+      비밀번호: <code>password123</code>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

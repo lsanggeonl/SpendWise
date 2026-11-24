@@ -1,0 +1,527 @@
+<%- include('../partials/head') %>
+
+<div class="app-container">
+  <%- include('../partials/sidebar') %>
+
+  <div class="main-wrapper">
+    <%- include('../partials/header') %>
+
+    <main class="content-body">
+      <!-- 1. Tier Warning Alert Banners (70%, 90%, 100%) -->
+      <%- include('../partials/alerts') %>
+
+      <% const tier = budgetComparison.warningTier; %>
+
+      <!-- 2. Spline 3D Robot FinTech Hero Showcase Section -->
+      <section class="spline-hero-card" aria-label="SpendWise 3D AI Assistant Hero">
+        <!-- 3D Robot Background Layer -->
+        <div class="spline-hero-bg" id="splineStage">
+          <iframe
+            id="splineRobotIframe"
+            src="https://my.spline.design/r4xbot-OzOqFszbjEhUVmFhNJysPdRW/"
+            frameborder="0"
+            width="100%"
+            height="100%"
+            allow="autoplay; fullscreen"
+            loading="lazy"
+            title="SpendWise 3D Robot Assistant"
+          ></iframe>
+          <div class="spline-bg-overlay"></div>
+
+          <!-- Floating Celebration Heart Overlay -->
+          <div class="robot-celebration-overlay" id="robotCelebrationOverlay" aria-hidden="true"></div>
+
+          <!-- Toast notification above robot when income is saved -->
+          <div class="celebration-toast" id="celebrationToast" aria-live="polite">
+            <span class="toast-heart">💖</span>
+            <div class="toast-info">
+              <div class="toast-title" id="celebrationToastTitle">수입 저장 완료!</div>
+              <div class="toast-desc" id="celebrationToastDesc">로봇이 기뻐하며 하트를 보냅니다 💕</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="spline-hero-glow"></div>
+
+        <!-- Foreground: Intelligent Financial Briefing & Action Center -->
+        <div class="spline-assistant-panel">
+          <div class="assistant-header">
+            <div class="assistant-badges-row">
+              <div class="assistant-tag">
+                <span class="tag-icon">⚡</span> AI FinTech Briefing
+              </div>
+              <div class="spline-live-badge">
+                <span class="live-pulse-dot"></span>
+                <span class="live-text">SpendWise 3D AI 로봇</span>
+              </div>
+            </div>
+            <h2 class="assistant-title">
+              안녕하세요, <span class="assistant-name"><%= currentUser ? currentUser.name : '회원' %></span>님! 👋
+            </h2>
+            <p class="assistant-desc">
+              SpendWise 3D 금융 로봇이 <strong><%= yearMonth %></strong> 자산 흐름과 소비 건전성을 실시간 분석하고 있습니다.
+            </p>
+          </div>
+
+          <!-- Financial Pulse Metrics Grid -->
+          <div class="assistant-metrics-grid">
+            <div class="assistant-metric-chip">
+              <div class="chip-label">소비 습관 점수</div>
+              <div class="chip-value" style="color: var(--primary-light);">
+                <%= report ? report.habitScore : 0 %><span class="chip-unit">점</span>
+              </div>
+              <div class="chip-status">
+                <span class="badge badge-<%= report ? report.gradeBadge : 'primary' %>" style="font-size: 0.72rem; padding: 2px 8px;">
+                  <%= report ? report.grade : '진단 중' %>
+                </span>
+              </div>
+            </div>
+
+            <div class="assistant-metric-chip">
+              <div class="chip-label">월간 순 저축</div>
+              <div class="chip-value" style="color: <%= summary.netSavings >= 0 ? '#A5B4FC' : '#FCA5A5' %>;">
+                <%= formatMoney(summary.netSavings) %>
+              </div>
+              <div class="chip-status">
+                <span style="font-size: 0.72rem; color: var(--text-dim);">저축률 <%= summary.totalIncome > 0 ? ((summary.netSavings / summary.totalIncome) * 100).toFixed(1) + '%' : '0%' %></span>
+              </div>
+            </div>
+
+            <div class="assistant-metric-chip">
+              <div class="chip-label">예산 소진율</div>
+              <div class="chip-value" style="color: <%= tier ? tier.color : '#fff' %>;">
+                <%= budgetComparison.usageRate %><span class="chip-unit">%</span>
+              </div>
+              <div class="chip-status">
+                <span class="badge badge-<%= tier ? tier.badge : 'secondary' %>" style="font-size: 0.72rem; padding: 2px 8px;">
+                  <%= tier ? tier.label : '안정' %>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Insight Note -->
+          <div class="assistant-insight-box">
+            <div class="insight-icon">💡</div>
+            <div class="insight-content">
+              <strong>재정 어드바이저 코칭:</strong>
+              <% if (summary.netSavings >= 0) { %>
+                현재 지출이 통제되어 <strong><%= formatMoney(summary.netSavings) %></strong>의 여유 자금을 확보 중입니다. 꾸준한 수입 기록으로 자산 형성을 가속화해보세요!
+              <% } else { %>
+                현재 지출이 수입을 초과하고 있습니다. 고정비 항목과 과소비 내역을 확인하여 불필요한 누수를 즉시 방어하세요.
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Interactive Quick Actions -->
+          <div class="assistant-actions-group">
+            <button type="button" class="btn btn-glow-income" onclick="openQuickIncomeModal()">
+              <span>💰 수입 즉시 기록</span>
+              <span class="btn-micro-badge">로봇 하트 발동 💕</span>
+            </button>
+            <a href="/transactions/new" class="btn btn-secondary">
+              <span>➕ 거래 등록</span>
+            </a>
+            <a href="/budget?month=<%= yearMonth %>" class="btn btn-secondary">
+              <span>🎯 예산 관리</span>
+            </a>
+            <a href="/analysis?month=<%= yearMonth %>" class="btn btn-secondary">
+              <span>🧬 정밀 리포트</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Primary Financial Metrics Stats Grid -->
+      <div class="stats-grid">
+        <!-- Monthly Income -->
+        <div class="stat-card" style="--card-accent: var(--success);">
+          <div class="stat-header">
+            <span class="stat-label">이번 달 총 수입</span>
+            <div class="stat-icon" style="background: var(--success-bg); color: var(--success);">💰</div>
+          </div>
+          <div class="stat-value" id="statTotalIncome"><%= formatMoney(summary.totalIncome) %></div>
+          <div class="stat-meta">
+            <span>목표 소득 대비</span>
+            <span class="badge badge-success">
+              <%= currentUser.monthly_income_target > 0 ? ((summary.totalIncome / currentUser.monthly_income_target) * 100).toFixed(0) + '%' : '-' %>
+            </span>
+          </div>
+        </div>
+
+        <!-- Monthly Expense -->
+        <div class="stat-card" style="--card-accent: var(--danger);">
+          <div class="stat-header">
+            <span class="stat-label">이번 달 총 지출</span>
+            <div class="stat-icon" style="background: var(--danger-bg); color: var(--danger);">💳</div>
+          </div>
+          <div class="stat-value" id="statTotalExpense"><%= formatMoney(summary.totalExpense) %></div>
+          <div class="stat-meta">
+            <span>고정비 <%= formatMoney(summary.fixedExpense) %> 포함</span>
+          </div>
+        </div>
+
+        <!-- Net Savings / Surplus -->
+        <div class="stat-card" style="--card-accent: <%= summary.netSavings >= 0 ? 'var(--primary)' : 'var(--danger)' %>;">
+          <div class="stat-header">
+            <span class="stat-label">순 저축 / 잔여 자금</span>
+            <div class="stat-icon" style="background: var(--primary-glow); color: var(--primary);">📈</div>
+          </div>
+          <div class="stat-value" id="statNetSavings" style="color: <%= summary.netSavings >= 0 ? '#A5B4FC' : '#FCA5A5' %>;">
+            <%= formatMoney(summary.netSavings) %>
+          </div>
+          <div class="stat-meta">
+            <span>저축률</span>
+            <span class="badge <%= summary.netSavings >= 0 ? 'badge-primary' : 'badge-danger' %>">
+              <%= summary.totalIncome > 0 ? ((summary.netSavings / summary.totalIncome) * 100).toFixed(1) + '%' : '0%' %>
+            </span>
+          </div>
+        </div>
+
+        <!-- Month-End Expected Spending Prediction -->
+        <div class="stat-card" style="--card-accent: var(--warning);">
+          <div class="stat-header">
+            <span class="stat-label">월말 예상 지출액</span>
+            <div class="stat-icon" style="background: var(--warning-bg); color: var(--warning);">🔮</div>
+          </div>
+          <div class="stat-value" style="color: #FCD34D;">
+            <%= typeof expectedData === 'object' ? formatMoney(expectedData.expectedTotal) : formatMoney(expectedData) %>
+          </div>
+          <div class="stat-meta">
+            <% if (typeof expectedData === 'object') { %>
+              <span>일평균 <%= formatMoney(expectedData.dailyAverage) %> / <%= expectedData.remainingDays %>일 남음</span>
+            <% } else { %>
+              <span>과거 월 최종 지출액</span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Budget Status & Habit Score Section -->
+      <div class="charts-grid-2">
+        <!-- Monthly Budget Progress & Warning Card -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🎯 <%= yearMonth %> 총 예산 진행률</div>
+              <div class="card-subtitle">설정 예산 대비 현재 소진 현황</div>
+            </div>
+            <span class="badge badge-<%= tier ? tier.badge : 'secondary' %>">
+              <%= tier ? tier.label : '미설정' %>
+            </span>
+          </div>
+
+          <div style="margin: 16px 0 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+              <div>
+                <span style="font-size: 1.5rem; font-weight: 800; color: #fff;"><%= formatMoney(budgetComparison.totalExpense) %></span>
+                <span style="color: var(--text-muted); font-size: 0.9rem;"> / <%= formatMoney(budgetComparison.totalBudget) %></span>
+              </div>
+              <div style="font-size: 1.3rem; font-weight: 800; color: <%= tier ? tier.color : '#fff' %>;">
+                <%= budgetComparison.usageRate %>%
+              </div>
+            </div>
+
+            <!-- Progress bar with tier color -->
+            <div class="progress-bar-bg" style="height: 12px;">
+              <div
+                class="progress-bar-fill <%= tier ? 'fill-' + tier.class.replace('warning-high', 'warning-90').replace('warning-low', 'warning-70') : '' %>"
+                style="width: <%= Math.min(100, budgetComparison.usageRate) %>%; background: <%= tier ? tier.color : 'var(--primary)' %>;"
+              ></div>
+            </div>
+
+            <!-- Warning tier tick marks -->
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-top: 6px;">
+              <span>0%</span>
+              <span style="color: var(--warning);">▲ 70% 주의</span>
+              <span style="color: var(--warning-high);">▲ 90% 경고</span>
+              <span style="color: var(--danger);">▲ 100% 위험</span>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--border-color); font-size: 0.85rem;">
+            <div>
+              <span style="color: var(--text-muted);">남은 예산 한도:</span>
+              <strong style="color: <%= budgetComparison.remaining >= 0 ? 'var(--success)' : 'var(--danger)' %>; margin-left: 6px;">
+                <%= formatMoney(budgetComparison.remaining) %>
+              </strong>
+            </div>
+            <a href="/budget?month=<%= yearMonth %>" class="btn btn-secondary btn-sm">예산 상세 조정 →</a>
+          </div>
+        </div>
+
+        <!-- 100-Point Spending Habit Score Snippet Card -->
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div class="card-header" style="margin-bottom: 8px;">
+            <div>
+              <div class="card-title">🧬 소비 습관 종합 점수</div>
+              <div class="card-subtitle">MySQL 실제 데이터 기반 실시간 산출</div>
+            </div>
+            <span class="badge badge-<%= report ? report.gradeBadge : 'primary' %>">
+              <%= report ? report.grade : '-' %>
+            </span>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 24px; padding: 12px 0;">
+            <div class="score-badge-huge" style="width: 110px; height: 110px; flex-shrink: 0;">
+              <span class="score-number" style="font-size: 2.3rem;"><%= report ? report.habitScore : 0 %></span>
+              <span class="score-unit">/ 100점</span>
+            </div>
+            <div style="flex: 1;">
+              <div style="font-size: 0.84rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+                <%= report ? report.feedbackSummary.substring(0, 110) + '...' : '데이터 분석 중입니다.' %>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <span class="badge badge-danger">과소비 <%= report ? report.overspendingCount : 0 %>건</span>
+                <span class="badge badge-warning">소액결제 <%= report ? report.microTransactionCount : 0 %>건</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align: right; border-top: 1px solid var(--border-color); padding-top: 12px;">
+            <a href="/analysis?month=<%= yearMonth %>" class="btn btn-secondary btn-sm">정밀 진단 리포트 보기 →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Charts: Monthly Trends & Category Breakdown -->
+      <div class="charts-grid-2">
+        <!-- Monthly Income/Expense Trend (Bar Chart) -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📊 최근 6개월 수입 vs 지출 추이</div>
+              <div class="card-subtitle">월별 현금 흐름 및 저축 규모 비교</div>
+            </div>
+          </div>
+          <div style="height: 260px; position: relative;">
+            <canvas id="monthlyTrendsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Category Expenses Breakdown (Doughnut Chart) -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🍩 카테고리별 소비 분석</div>
+              <div class="card-subtitle"><%= yearMonth %> 지출 비중</div>
+            </div>
+          </div>
+          <div style="height: 260px; position: relative;">
+            <% if (categoryExpenses && categoryExpenses.length > 0) { %>
+              <canvas id="categoryDoughnutChart"></canvas>
+            <% } else { %>
+              <div style="display: flex; height: 100%; align-items: center; justify-content: center; color: var(--text-dim); font-size: 0.88rem;">
+                등록된 지출 내역이 없습니다.
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Recent Transactions Table Card -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">💳 최근 거래 내역</div>
+            <div class="card-subtitle">가장 최근 등록된 수입 및 지출 항목</div>
+          </div>
+          <a href="/transactions" class="btn btn-secondary btn-sm">전체 내역 보기 →</a>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>일자</th>
+                <th>구분</th>
+                <th>카테고리</th>
+                <th>거래 내용</th>
+                <th>결제 수단</th>
+                <th>금액</th>
+              </tr>
+            </thead>
+            <tbody id="recentTransactionsTbody">
+              <% if (recentTransactions && recentTransactions.length > 0) { %>
+                <% recentTransactions.forEach(tx => { %>
+                  <tr>
+                    <td style="color: var(--text-muted); font-size: 0.82rem;"><%= formatDate(tx.transaction_date) %></td>
+                    <td>
+                      <span class="badge <%= tx.type === 'income' ? 'badge-success' : 'badge-danger' %>">
+                        <%= tx.type === 'income' ? '수입' : '지출' %>
+                      </span>
+                    </td>
+                    <td>
+                      <span style="display: inline-flex; align-items: center; gap: 6px;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: <%= tx.category_color %>;"></span>
+                        <%= tx.category_name %>
+                      </span>
+                    </td>
+                    <td>
+                      <strong style="color: #fff;"><%= tx.title %></strong>
+                      <% if (tx.is_fixed) { %>
+                        <span class="badge badge-info" style="font-size: 0.68rem; margin-left: 4px;">고정</span>
+                      <% } %>
+                      <% if (tx.type === 'expense' && tx.amount >= currentUser.overspending_threshold) { %>
+                        <span class="badge badge-warning-high" style="font-size: 0.68rem; margin-left: 4px;">과소비 주의</span>
+                      <% } %>
+                    </td>
+                    <td style="color: var(--text-muted); font-size: 0.82rem;"><%= tx.payment_method %></td>
+                    <td>
+                      <span class="<%= tx.type === 'income' ? 'amount-income' : 'amount-expense' %>">
+                        <%= tx.type === 'income' ? '+' : '-' %><%= formatMoney(tx.amount) %>
+                      </span>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 32px;">
+                    등록된 거래 내역이 없습니다. 새로운 거래를 등록해보세요!
+                  </td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Quick Income Registration Modal (Direct Dashboard 3D Heart Integration) -->
+<div class="modal-backdrop" id="quickIncomeModal">
+  <div class="modal-dialog" style="max-width: 520px;">
+    <div class="modal-header">
+      <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 1.3rem;">💰</span>
+        <span>수입 내역 간편 등록</span>
+      </div>
+      <button type="button" class="modal-close" onclick="closeModal('quickIncomeModal')" aria-label="닫기">&times;</button>
+    </div>
+
+    <form id="quickIncomeForm" onsubmit="handleQuickIncomeSubmit(event)">
+      <div class="modal-body">
+        <div id="quickIncomeAlert" class="alert-banner alert-banner-danger" style="display: none; margin-bottom: 16px; padding: 10px 14px;">
+          <div class="alert-icon" style="font-size: 1.1rem;">⚠️</div>
+          <div class="alert-body">
+            <div class="alert-desc" id="quickIncomeAlertMsg" style="font-size: 0.84rem;"></div>
+          </div>
+        </div>
+
+        <input type="hidden" name="type" value="income">
+
+        <div class="form-group">
+          <label class="form-label" for="qiAmount">수입 금액 (원) *</label>
+          <input
+            type="number"
+            id="qiAmount"
+            name="amount"
+            class="form-control"
+            placeholder="예: 3200000"
+            required
+            min="1"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="qiTitle">수입 명칭 / 출처 *</label>
+          <input
+            type="text"
+            id="qiTitle"
+            name="title"
+            class="form-control"
+            placeholder="예: 11월 급여, 프리랜서 용역비, 이자 소득"
+            required
+          >
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="qiCategoryId">카테고리 *</label>
+            <select id="qiCategoryId" name="categoryId" class="form-control" required>
+              <option value="">카테고리 선택</option>
+              <% if (typeof categories !== 'undefined' && categories && categories.length > 0) { %>
+                <% categories.forEach(cat => { %>
+                  <option value="<%= cat.id %>" <%= cat.type === 'income' ? 'selected' : '' %>>
+                    [<%= cat.type === 'income' ? '수입' : '지출' %>] <%= cat.name %>
+                  </option>
+                <% }) %>
+              <% } else { %>
+                <option value="1">[수입] 급여</option>
+                <option value="2">[수입] 부수입</option>
+              <% } %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="qiTransactionDate">거래 일자 *</label>
+            <input
+              type="date"
+              id="qiTransactionDate"
+              name="transactionDate"
+              class="form-control"
+              value="<%= new Date().toISOString().split('T')[0] %>"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="qiPaymentMethod">입금 수단</label>
+            <select id="qiPaymentMethod" name="paymentMethod" class="form-control">
+              <option value="계좌이체" selected>계좌이체</option>
+              <option value="현금">현금</option>
+              <option value="체크카드">체크카드</option>
+              <option value="기타">기타</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="display: flex; align-items: center; margin-top: 24px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.88rem;">
+              <input
+                type="checkbox"
+                name="isFixed"
+                id="qiIsFixed"
+                value="1"
+                style="width: 18px; height: 18px; accent-color: var(--primary);"
+              >
+              <span>정기 고정수입 여부</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" for="qiDescription">상세 메모 (선택)</label>
+          <input
+            type="text"
+            id="qiDescription"
+            name="description"
+            class="form-control"
+            placeholder="추가적인 메모 사항을 기록하세요."
+          >
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('quickIncomeModal')">취소</button>
+        <button type="submit" class="btn btn-success" id="qiSubmitBtn" style="padding: 10px 22px;">
+          <span>💾 수입 저장 & 로봇 축하 반응</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Scripts for Dashboard Charts & 3D Robot Interactions -->
+<script src="/js/dashboard.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const trendsData = <%- JSON.stringify(monthlyTrends || []) %>;
+    const categoryData = <%- JSON.stringify(categoryExpenses || []) %>;
+    initDashboardCharts(trendsData, categoryData);
+  });
+</script>
+
+<%- include('../partials/footer') %>

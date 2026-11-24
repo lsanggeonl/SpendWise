@@ -1,0 +1,153 @@
+<%- include('../partials/head') %>
+
+<div class="app-container">
+  <%- include('../partials/sidebar') %>
+
+  <div class="main-wrapper">
+    <%- include('../partials/header') %>
+
+    <main class="content-body" style="max-width: 720px; margin: 0 auto; width: 100%;">
+      <%- include('../partials/alerts') %>
+
+      <div class="card" style="padding: 32px;">
+        <div class="card-header" style="margin-bottom: 24px;">
+          <div>
+            <div class="card-title">
+              <%= isEdit ? '✏️ 거래 내역 수정' : '➕ 새로운 수입·지출 등록' %>
+            </div>
+            <div class="card-subtitle">정확한 소비 습관 분석을 위해 사실대로 기록해주세요.</div>
+          </div>
+          <a href="/transactions" class="btn btn-secondary btn-sm">목록으로</a>
+        </div>
+
+        <form action="<%= action %>" method="POST">
+          <!-- Type Radio (Income vs Expense) -->
+          <div class="form-group">
+            <label class="form-label">거래 구분 *</label>
+            <div style="display: flex; gap: 16px;">
+              <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: var(--bg-input); border: 2px solid <%= (!transaction || transaction.type === 'expense') ? 'var(--danger)' : 'var(--border-color)' %>; border-radius: var(--radius-sm); cursor: pointer;">
+                <input type="radio" name="type" value="expense" <%= (!transaction || transaction.type === 'expense') ? 'checked' : '' %> required>
+                <span style="color: #F87171; font-weight: 700;">지출 (Expense)</span>
+              </label>
+
+              <label style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; background: var(--bg-input); border: 2px solid <%= (transaction && transaction.type === 'income') ? 'var(--success)' : 'var(--border-color)' %>; border-radius: var(--radius-sm); cursor: pointer;">
+                <input type="radio" name="type" value="income" <%= (transaction && transaction.type === 'income') ? 'checked' : '' %>>
+                <span style="color: var(--success); font-weight: 700;">수입 (Income)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- Amount -->
+            <div class="form-group">
+              <label class="form-label" for="amount">금액 (원) *</label>
+              <input
+                type="number"
+                id="amount"
+                name="amount"
+                class="form-control"
+                placeholder="50000"
+                value="<%= transaction ? transaction.amount : '' %>"
+                required
+                min="1"
+              >
+            </div>
+
+            <!-- Date -->
+            <div class="form-group">
+              <label class="form-label" for="transactionDate">거래 일자 *</label>
+              <input
+                type="date"
+                id="transactionDate"
+                name="transactionDate"
+                class="form-control"
+                value="<%= transaction && transaction.transaction_date ? formatDate(transaction.transaction_date) : defaultDate %>"
+                required
+              >
+            </div>
+          </div>
+
+          <!-- Category Selection -->
+          <div class="form-group">
+            <label class="form-label" for="categoryId">카테고리 *</label>
+            <select id="categoryId" name="categoryId" class="form-control" required>
+              <option value="">카테고리를 선택하세요</option>
+              <% categories.forEach(cat => { %>
+                <option
+                  value="<%= cat.id %>"
+                  <%= (transaction && transaction.category_id == cat.id) ? 'selected' : '' %>
+                >
+                  [<%= cat.type === 'income' ? '수입' : '지출' %>] <%= cat.name %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <!-- Title -->
+          <div class="form-group">
+            <label class="form-label" for="title">거래 명칭 / 가맹점 *</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              class="form-control"
+              placeholder="예: 스타벅스 강남점, 이마트 역삼점, 11월 급여"
+              value="<%= transaction ? transaction.title : '' %>"
+              required
+            >
+          </div>
+
+          <div class="form-row">
+            <!-- Payment Method -->
+            <div class="form-group">
+              <label class="form-label" for="paymentMethod">결제 수단</label>
+              <select id="paymentMethod" name="paymentMethod" class="form-control">
+                <option value="신용카드" <%= (!transaction || transaction.payment_method === '신용카드') ? 'selected' : '' %>>신용카드</option>
+                <option value="체크카드" <%= (transaction && transaction.payment_method === '체크카드') ? 'selected' : '' %>>체크카드</option>
+                <option value="간편결제" <%= (transaction && transaction.payment_method === '간편결제') ? 'selected' : '' %>>간편결제(네이버페이/카카오페이 등)</option>
+                <option value="계좌이체" <%= (transaction && transaction.payment_method === '계좌이체') ? 'selected' : '' %>>계좌이체 / 무통장</option>
+                <option value="현금" <%= (transaction && transaction.payment_method === '현금') ? 'selected' : '' %>>현금</option>
+                <option value="자동이체" <%= (transaction && transaction.payment_method === '자동이체') ? 'selected' : '' %>>자동이체</option>
+              </select>
+            </div>
+
+            <!-- Fixed Expense / Income Checkbox -->
+            <div class="form-group" style="display: flex; align-items: center; margin-top: 24px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem;">
+                <input
+                  type="checkbox"
+                  name="isFixed"
+                  value="1"
+                  <%= (transaction && transaction.is_fixed) ? 'checked' : '' %>
+                  style="width: 18px; height: 18px; accent-color: var(--primary);"
+                >
+                <span>정기 고정비 / 고정수입 여부</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label class="form-label" for="description">상세 메모 (선택)</label>
+            <textarea
+              id="description"
+              name="description"
+              class="form-control"
+              rows="3"
+              placeholder="추가적인 지출 사유나 메모를 입력하세요."
+            ><%= transaction ? (transaction.description || '') : '' %></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+            <a href="/transactions" class="btn btn-secondary">취소</a>
+            <button type="submit" class="btn btn-primary" style="padding: 10px 24px;">
+              <%= isEdit ? '수정 완료' : '등록 완료' %>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
